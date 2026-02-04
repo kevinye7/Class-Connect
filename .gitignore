@@ -46,17 +46,7 @@ next-env.d.ts
 
 # others
 .firebase.txt
-class-connect-58d87-firebase-adminsdk-fbsvc-37feea5b00.json
-.class-connect-58d87-firebase-adminsdk-fbsvc-37feea5b00.json
 
-# local database (if using SQLite for testing)
-data/*.db
-data/*.db-wal
-data/*.db-shm
-
-# course data files (large JSON files)
-data/*.json
-
-# Firebase service account keys
-scripts/*firebase*admin*.json
-scripts/serviceAccountKey.json
+# scraper files (sensitive data)
+scripts/firebase-service-account.json
+scripts/cuny_courses.json

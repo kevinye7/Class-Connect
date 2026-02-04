@@ -42,16 +42,9 @@ export default function LandingPage() {
 
         await signUpUser(email, password);
         
-        setSuccess('Account created successfully! You can now sign in.');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        
-        // Switch to login mode after 2 seconds
-        setTimeout(() => {
-          setIsSignUp(false);
-          setSuccess('');
-        }, 2000);
+        // User is automatically logged in after signup, redirect to dashboard
+        closeLoginModal();
+        router.push('/dashboard');
       } else {
         // Login Flow
         await signInUser(email, password);

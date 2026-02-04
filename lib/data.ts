@@ -27,60 +27,63 @@ export const cunyColleges: College[] = [
   { id: 'soj', name: 'School of Journalism', abbreviation: 'CUNY J-School', domain: 'journalism.cuny.edu' },
 ];
 
-// Fetch all courses from Firestore
-export async function fetchAvailableCourses(): Promise<Course[]> {
-  try {
-    const coursesRef = collection(db, 'courses');
-    const snapshot = await getDocs(coursesRef);
-    
-    return snapshot.docs.map(doc => {
-      const data = doc.data() as CourseDoc;
-      // Map CourseDoc to Course interface for UI compatibility
-      return {
-        id: doc.id,
-        name: data.title || data.courseCode || '',
-        code: data.catalogNumber 
-          ? `${data.subject || ''} ${data.catalogNumber}`.trim()
-          : (data.courseCode || ''),
-        instructor: data.instructor || 'TBA',
-        students: 0, // Not stored in Firestore yet
-        collegeId: getCollegeIdFromCode(data.collegeCode || '')
-      };
-    });
-  } catch (err) {
-    console.error('Error fetching courses from Firestore:', err);
-    return [];
-  }
-}
+// Hardcoded demo users
+const demoUsers = [
+  'alex.johnson@cuny.edu',
+  'sarah.williams@cuny.edu', 
+  'mike.chen@cuny.edu',
+  'jessica.martinez@cuny.edu'
+];
 
-// Helper function to map college code to college ID
-function getCollegeIdFromCode(collegeCode: string): string {
-  const codeMap: Record<string, string> = {
-    'HTR01': 'hunter',
-    'BKL01': 'brooklyn',
-    'QNS01': 'queens',
-    'NYC01': 'city',
-    'LEH01': 'lehman',
-    'YOR01': 'york',
-    'JJC01': 'johnjay',
-    'MEC01': 'medgar',
-    'NYT01': 'citytech',
-    'BMC01': 'bmcc',
-    'BCC01': 'bcc',
-    'QCC01': 'qcc',
-    'KCC01': 'kingsborough',
-    'LAG01': 'laguardia',
-    'HOS01': 'hostos',
-    'GUT01': 'guttman',
-    'LAW01': 'law',
-    'SPS01': 'sps',
-    'GRD01': 'gradcenter',
-    'JOU01': 'soj',
-    'BRC01': 'baruch',
-    'BAR01': 'baruch'
-  };
-  return codeMap[collegeCode] || collegeCode.toLowerCase().replace(/\d+/g, '');
-}
+// Pre-populated chat messages for demonstration
+const chatMessages: Record<string, Message[]> = {
+  '1': [
+    {
+      id: '1',
+      text: 'Hey everyone! Welcome to CSC101 chat',
+      sender: 'alex.johnson@cuny.edu',
+      timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+      courseId: '1'
+    },
+    {
+      id: '2', 
+      text: 'Thanks for starting this! Does anyone know when the first assignment is due?',
+      sender: 'sarah.williams@cuny.edu',
+      timestamp: new Date(Date.now() - 82800000).toISOString(), // 23 hours ago
+      courseId: '1'
+    },
+    {
+      id: '3',
+      text: 'I think it\'s due next Friday according to the syllabus',
+      sender: 'mike.chen@cuny.edu', 
+      timestamp: new Date(Date.now() - 79200000).toISOString(), // 22 hours ago
+      courseId: '1'
+    },
+    {
+      id: '4',
+      text: 'Anyone want to form a study group?',
+      sender: 'jessica.martinez@cuny.edu',
+      timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+      courseId: '1'
+    }
+  ],
+  '2': [
+    {
+      id: '1',
+      text: 'Calculus chat is live! Who\'s ready for derivatives?',
+      sender: 'mike.chen@cuny.edu',
+      timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+      courseId: '2'
+    },
+    {
+      id: '2',
+      text: 'Not me 😅 but we\'ll get through it together',
+      sender: 'alex.johnson@cuny.edu',
+      timestamp: new Date(Date.now() - 169200000).toISOString(), // 47 hours ago  
+      courseId: '2'
+    }
+  ]
+};
 
 export const getAllColleges = (): College[] => {
   return cunyColleges;

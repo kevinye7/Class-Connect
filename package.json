@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "import:courses": "node scripts/import_courses_to_firestore.cjs"
+    "import-courses": "node scripts/import_to_firebase.js"
   },
   "dependencies": {
     "firebase": "^12.6.0",
