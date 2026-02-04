@@ -1,10 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getUserCourses, getAvailableCourses } from '../../lib/data';
+import { getUserCourses, fetchAvailableCourses, getLastMessage } from '../../lib/data';
 import CourseCard from '../../components/CourseCard';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '@/lib/AuthContext';
-import { Course } from '../../types';
+import { formatMessageTime } from '@/lib/utils';
+import { Course, Message } from '../../types';
 
 function DashboardContent() {
   const [userCourses, setUserCourses] = useState<Course[]>([]);
@@ -13,13 +14,17 @@ function DashboardContent() {
 
   useEffect(() => {
     setUserCourses(getUserCourses());
-    setAvailableCourses(getAvailableCourses().slice(0, 3));
+    // Fetch real courses from API and show first 3
+    fetchAvailableCourses().then(courses => {
+      setAvailableCourses(courses.slice(0, 3));
+    });
   }, []);
 
-  const joinCourse = (courseId: string) => {
+  const joinCourse = async (courseId: string) => {
     const courses = getUserCourses();
-    const courseToJoin = getAvailableCourses().find(course => course.id === courseId);
-    
+    // Fetch latest available courses
+    const allCourses = await fetchAvailableCourses();
+    const courseToJoin = allCourses.find(course => course.id === courseId);
     if (courseToJoin && !courses.find(course => course.id === courseId)) {
       const updatedCourses = [...courses, courseToJoin];
       localStorage.setItem('userCourses', JSON.stringify(updatedCourses));
@@ -67,14 +72,53 @@ function DashboardContent() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {userCourses.map(course => (
-                  <CourseCard 
-                    key={course.id} 
-                    course={course} 
-                    onJoin={joinCourse}
-                    isJoined={true}
-                  />
-                ))}
+                {userCourses.map(course => {
+                  const lastMessage = getLastMessage(course.id);
+                  return (
+                    <div key={course.id} className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{course.name}</h3>
+                          <p className="text-sm text-gray-600 mb-2">{course.code}</p>
+                          <div className="flex items-center space-x-4 text-xs text-gray-500">
+                            <span>Prof. {course.instructor}</span>
+                            <span>•</span>
+                            <span>{course.students} students</span>
+                          </div>
+                        </div>
+                        <div className="w-12 h-12 bg-linear-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shrink-0 ml-4">
+                          <span className="text-white font-bold text-sm">{course.code.split(' ')[0]}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Recent Message Preview */}
+                      {lastMessage && (
+                        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium text-gray-700">
+                              {lastMessage.sender.split('@')[0]}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {formatMessageTime(lastMessage.timestamp)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-2 truncate">
+                            {lastMessage.text}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <div className="flex space-x-2">
+                        <a
+                          href={`/chat/${course.id}`}
+                          className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        >
+                          Enter Chat
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -125,7 +169,7 @@ function DashboardContent() {
                   </div>
                   <button
                     onClick={() => joinCourse(course.id)}
-                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors text-center"
                   >
                     Join
                   </button>

@@ -37,7 +37,7 @@ export default function CourseCard({ course, onJoin, onLeave, isJoined }: Course
             {onLeave && (
               <button
                 onClick={() => onLeave(course.id)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
               >
                 Leave
               </button>
@@ -46,7 +46,7 @@ export default function CourseCard({ course, onJoin, onLeave, isJoined }: Course
         ) : (
           <button
             onClick={() => onJoin(course.id)}
-            className="flex-1 bg-linear-to-r from-green-500 to-emerald-600 text-white py-2 px-4 rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+            className="flex-1 bg-linear-to-r from-green-500 to-emerald-600 text-white py-2 px-4 rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 text-center"
           >
             Join Course
           </button>
